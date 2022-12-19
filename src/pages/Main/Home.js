@@ -1,30 +1,22 @@
 import React from "react";
-import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import ProductCard from "../../components/ProductCard";
+import { useGetProductsQuery } from "../../features/api/apiSlice";
 import { toggle, toggleBrands } from "../../features/filter/filterSlice";
-import { getProducts } from "../../features/products/productsSlice";
 
 const Home = () => {
   const dispatch = useDispatch();
   const { brands, stock } = useSelector((state) => state.filter);
-  const { products, isLoading } = useSelector((state) => state.products);
 
-  // const [products, setProducts] = useState([]);
-  useEffect(() => {
-    // fetch("https://moontech-server-g4u6.onrender.com/blogs")
-    //   .then((res) => res.json())
-    //   .then((data) => setProducts(data.data));
-    dispatch(getProducts());
-  }, [dispatch]);
-
-  const activeClass = "text-white  bg-indigo-500 border-white";
-
-  let content;
+  const { data, isLoading } = useGetProductsQuery();
 
   if (isLoading) {
-    content = <h1 className="text-5xl text-center text-red-500">Loading...</h1>;
+    return <h1 className="text-5xl text-center text-red-500">Loading...</h1>;
   }
+
+  const products = data?.data;
+
+  let content;
 
   if (products.length) {
     content = products.map((product) => (
@@ -47,6 +39,7 @@ const Home = () => {
       })
       .map((product) => <ProductCard key={product._id} product={product} />);
   }
+  const activeClass = "text-white  bg-indigo-500 border-white";
 
   return (
     <div className="max-w-7xl gap-14 mx-auto my-10">
